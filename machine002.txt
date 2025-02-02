@@ -1,0 +1,87 @@
+[問題定義] → [數據收集] → [數據預處理] → [選擇模型]
+                              ↓
+                           [訓練模型] → [評估模型] → [模型調整與優化]
+                                                   ↓
+                                                [測試模型] → [部署與監控]
+
+												
+												
+-----------------------------------------------------------------------------
+判斷訊息內容（如文本分類、情感分析、垃圾郵件檢測等）
+
+常見的應用是根據訊息的內容來進行分類或判斷。
+這類問題通常屬於 自然語言處理 (NLP) 範疇，使用的技術包括文本向量化、模型訓練等。
+
+
+1. 定義問題
+
+    確定訊息內容的類別。例如，你可能希望根據電子郵件內容判斷它是否為垃圾郵件，
+	或者根據評論文本判斷其情感（正面、負面、中立）。
+
+2. 數據收集
+
+    收集包含訊息內容和其相應標籤的數據。例如，若是垃圾郵件分類問題，
+	你需要一個包含「垃圾郵件」或「非垃圾郵件」標籤的數據集。
+
+3. 數據預處理
+
+    清理數據：去除無關的符號、標點、停用詞（例如「的」、「了」等）等。
+    文本向量化：將文本轉換成機器學習模型可以理解的數值形式，常見方法包括：
+        TF-IDF (Term Frequency-Inverse Document Frequency)：衡量單詞在文本中的重要性。
+        Word2Vec / GloVe：將單詞映射到向量空間，捕捉語義。
+        Bag of Words：將文本表示為詞頻矩陣。
+
+4. 選擇模型
+
+    根據問題選擇適合的機器學習模型，常見的選擇包括：
+        邏輯回歸 (Logistic Regression)：適用於二分類問題。
+        支持向量機 (SVM)：對於高維度的文本數據表現良好。
+        隨機森林 (Random Forest)：適用於處理複雜的非線性關係。
+        深度學習模型 (如LSTM、BERT等)：適用於更複雜的語言理解。
+
+5. 訓練模型
+
+    使用訓練集來訓練模型，並利用交叉驗證來避免過擬合。
+
+6. 評估模型
+
+    使用測試集來評估模型的表現，常見的評估指標有：
+        準確率（Accuracy）
+        精確率、召回率、F1 分數：特別適用於不平衡數據集。
+
+7. 調整和優化
+
+    根據評估結果，對模型進行調整，包括超參數調整（如學習率、正則化強度等）以及特徵選擇。
+
+8. 部署與應用
+
+    部署訓練好的模型來進行實時預測或批量處理新的訊息數據。
+	
+	
+	
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report
+
+# 示例文本和標籤
+texts = ["這是垃圾郵件", "你好，請查看我的最新商品", "免費獲得獎金", "我想和你討論工作事宜"]
+labels = ['垃圾郵件', '非垃圾郵件', '垃圾郵件', '非垃圾郵件']
+
+# 數據分割
+X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.3, random_state=42)
+
+# 特徵提取：TF-IDF 向量化
+vectorizer = TfidfVectorizer(stop_words='english')
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+# 訓練模型
+model = MultinomialNB()
+model.fit(X_train_tfidf, y_train)
+
+# 預測
+y_pred = model.predict(X_test_tfidf)
+
+# 評估模型
+print(classification_report(y_test, y_pred))
